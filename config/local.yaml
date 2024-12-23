@@ -1,12 +1,20 @@
 server:
-  port: 8082
+  port: 8002
 
-databases:
-  user: admin
-  password: admin
-  host: localhost
-  dbName: shopDEV
+mysql:
+  host: 127.0.0.1
+  port: 33306
+  username: root
+  password: root1234
+  dbname: shopdevgo
+  maxIdleConns: 10  #so luong ket noi idle toi da
+  maxOpenConns: 100 # so luong ket noi open toi da
+  connMaxLifetime: 3600 # thoi gian toi da cua ket noi
 
-security:
-  jwt:
-    key: abc123
+logger:
+  log_level: debug
+  file_log_name: "./storage/logs/app.log"
+  max_size: 500
+  max_backups: 3
+  max_age: 28
+  compress: true
