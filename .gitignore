@@ -7,7 +7,7 @@
 *.dll
 *.so
 *.dylib
-prod*
+production*
 /storage/*
 
 # Test binary, built with `go test -c`
