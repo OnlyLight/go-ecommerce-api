@@ -20,10 +20,10 @@ COPY . .
 RUN go build -o main ./cmd/server
 
 # Stage 2: Final image
-FROM alpine:latest
+FROM scratch
 
-# Install certificates for HTTPS
-RUN apk --no-cache add ca-certificates && update-ca-certificates
+# # Install certificates for HTTPS
+# RUN apk --no-cache add ca-certificates && update-ca-certificates
 
 # Set working directory
 WORKDIR /root/

@@ -8,7 +8,7 @@ import (
 
 func Run() {
 	LoadConfig()
-	fmt.Println("config", global.Config.Server.Port)
+	// fmt.Println("config", global.Config.Server.Port)
 
 	InitLogger()
 	global.Logger.Info("Logger init success")
