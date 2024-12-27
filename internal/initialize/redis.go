@@ -9,10 +9,14 @@ import (
 	"go.uber.org/zap"
 )
 
-var r = global.Config.Redis
+// Global variables in Go are initialized at compile time, before the main function or any other code runs.
+// is not yet populated => so we need to use pointer to access the variable dynamically after runtime code.
+// var r = &global.Config.Redis
+
 var ctx = context.Background()
 
 func InitRedis() {
+	r := global.Config.Redis
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%d", r.Host, r.Port),
 		Password: r.Password, // no password set
@@ -24,6 +28,7 @@ func InitRedis() {
 
 	if err != nil {
 		global.Logger.Error("Failed to connect to Redis", zap.Error(err))
+		return
 	}
 
 	global.Logger.Info("Connected to Redis")

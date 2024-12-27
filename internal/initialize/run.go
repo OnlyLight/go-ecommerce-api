@@ -13,8 +13,8 @@ func Run() {
 	InitLogger()
 	global.Logger.Info("Logger init success")
 
-	// InitMySQL()
-	// InitRedis()
+	InitMySQL()
+	InitRedis()
 
 	r := InitRouter()
 

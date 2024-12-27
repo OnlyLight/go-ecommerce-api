@@ -3,8 +3,8 @@ server:
   mode: "dev"
 
 mysql:
-  host: 127.0.0.1
-  port: 33306
+  host: mysql_container
+  port: 3306
   username: root
   password: root1234
   dbname: shopdevgo
@@ -21,7 +21,7 @@ logger:
   compress: true
 
 redis:
-  host: 127.0.0.1
-  port: 6381
+  host: redis_container
+  port: 6379
   password: ""
   database: 0
