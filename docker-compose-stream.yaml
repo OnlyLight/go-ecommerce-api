@@ -1,55 +1,9 @@
 version: '3.9'
 
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: app_container
-    restart: always
-    depends_on:
-      - mysql
-      - redis
-    ports:
-      - "8002:8002"
-    networks:
-      - app-network
-
-  mysql:
-    image: mysql:8.0
-    container_name: mysql_container
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASS}
-      MYSQL_DATABASE: ${DB_NAME}
-      # MYSQL_PASSWORD: ${DB_PASS}
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./init/init.sql:/docker-entrypoint-initdb.d/init.sql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      retries: 3
-    networks:
-      - app-network
-      - steaming-network
-
-  redis:
-    image: redis:7.0
-    container_name: redis_container
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - app-network
-
   kafka:
     image: confluentinc/cp-kafka:7.5.3
     container_name: kafka
-    volumes:
-      - kafka_data:/var/lib/kafka/data
     environment:
       CLUSTER_ID: 'q1Sh-9_ISia_zwGINzRvyQ'
       KAFKA_NODE_ID: 1
@@ -79,7 +33,7 @@ services:
         /etc/confluent/docker/run
     depends_on:
       - kafka
-      - mysql
+      # - mysql
     environment:
       CONNECT_BOOTSTRAP_SERVERS: "kafka:29092"
       CONNECT_GROUP_ID: "kafka-connect-group"
@@ -110,7 +64,7 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
-      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: connect
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: post
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect:8083
       DYNAMIC_CONFIG_ENABLED: 'true'
     ports:
@@ -118,13 +72,26 @@ services:
     networks:
       - steaming-network
 
+#   mysql:
+#     image: mysql:8.0
+#     container_name: mysql_container
+#     restart: unless-stopped
+#     environment:
+#       MYSQL_ROOT_PASSWORD: root1234
+#       MYSQL_DATABASE: testdb
+#       # MYSQL_USER: shopgo
+#       # MYSQL_PASSWORD: root1234
+#     ports:
+#       - "3306:3306"
+#     volumes:
+#       - mysql_data_test:/var/lib/mysql
+#       - ./init/db.sql:/docker-entrypoint-initdb.d/db.sql:ro
+#     networks:
+#       - steaming-network
+
+# volumes:
+#   mysql_data_test:
+
 networks:
-  app-network:
-    driver: bridge
   steaming-network:
     driver: bridge
-
-volumes:
-  mysql_data:
-  redis_data:
-  kafka_data:
