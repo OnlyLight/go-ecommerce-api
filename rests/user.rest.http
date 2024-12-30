@@ -1,0 +1,9 @@
+@baseUrl=http://localhost:8002/v1/api
+
+### User Registration
+POST {{baseUrl}}/user/register
+Content-Type: application/json
+{
+  "email": "server.onlylight@gmail.com",
+  "purpose": "TEST_USER"
+}

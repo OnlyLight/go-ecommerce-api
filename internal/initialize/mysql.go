@@ -66,7 +66,7 @@ func migrateTables() {
 
 func genTableDAO() {
 	g := gen.NewGenerator(gen.Config{
-		OutPath: "../query",
+		OutPath: "./internal/model",                                                 // output path
 		Mode:    gen.WithoutContext | gen.WithDefaultQuery | gen.WithQueryInterface, // generate mode
 	})
 

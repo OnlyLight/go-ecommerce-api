@@ -1,5 +1,10 @@
 package repo
 
+import (
+	"github.com/onlylight29/go-ecommerce-backend-api/global"
+	"github.com/onlylight29/go-ecommerce-backend-api/internal/model"
+)
+
 // type UserRepo struct {
 // }
 
@@ -26,5 +31,7 @@ func NewUserRepository() IUserRepo {
 
 // GetUserByEmail implements IUserRepo.
 func (us *userRepository) GetUserByEmail(email string) bool {
-	panic("unimplemented")
+	row := global.MDB.Table(TableNameGoCrmUser).Where("usr_email = ?", email).First(&model.GoCrmUser{}).RowsAffected
+
+	return row != 0
 }
