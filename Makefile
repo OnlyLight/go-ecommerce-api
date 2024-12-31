@@ -3,7 +3,7 @@ APP_NAME = server
 # GOOSE PARAMETERS
 GOOSE_DRIVER=mysql
 GOOSE_DBSTRING="root:root1234@tcp(localhost:3306)/shopdevgo"
-GOOSE_MIGRATION_DIR=./migrations/sql
+GOOSE_MIGRATION_DIR=./sql/schema
 
 run:
 	go run ./cmd/${APP_NAME}/main.go
