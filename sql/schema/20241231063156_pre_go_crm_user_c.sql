@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE IF NOT EXISTS `go_crm_user` (
+CREATE TABLE IF NOT EXISTS `pre_go_crm_user_c` (
   `usr_id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `usr_email` varchar(30) NOT NULL DEFAULT '' COMMENT 'Email',
   `usr_phone` varchar(15) NOT NULL DEFAULT '' COMMENT 'Phone',
@@ -22,5 +22,5 @@ CREATE TABLE IF NOT EXISTS `go_crm_user` (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS `go_crm_user`;
+DROP TABLE IF EXISTS `pre_go_crm_user_c`;
 -- +goose StatementEnd
