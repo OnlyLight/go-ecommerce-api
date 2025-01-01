@@ -8,7 +8,7 @@
     "database.user": "root",
     "database.password": "root1234",
     "database.server.id": "184054",
-    "topic.prefix": "dbserver1",
+    "topic.prefix": "dbserver",
     "database.include.list": "shopdevgo",
     "schema.history.internal.kafka.bootstrap.servers": "kafka:29092",
     "schema.history.internal.kafka.topic": "schema-changes.shopdevgo"

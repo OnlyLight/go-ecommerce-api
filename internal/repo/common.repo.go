@@ -4,7 +4,7 @@ import "context"
 
 const (
 	NumberNull         int    = 0
-	TableNameGoCrmUser string = "go_crm_user"
+	TableNameGoCrmUser string = "pre_go_crm_user_c"
 )
 
 var (

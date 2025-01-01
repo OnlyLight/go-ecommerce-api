@@ -13,8 +13,10 @@ func Run() {
 	InitLogger()
 	global.Logger.Info("Logger init success")
 
-	InitMySQL()
+	// InitMySQL()
+	InitMySQLC()
 	InitRedis()
+	InitKafka()
 
 	r := InitRouter()
 

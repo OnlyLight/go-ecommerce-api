@@ -4,6 +4,6 @@
 POST {{baseUrl}}/user/register
 Content-Type: application/json
 {
-  "email": "server.onlylight@gmail.com",
+  "email": "onlylight130@gmail.com",
   "purpose": "TEST_USER"
 }

@@ -4,6 +4,7 @@ import (
 	"github.com/onlylight29/go-ecommerce-backend-api/global"
 	"github.com/onlylight29/go-ecommerce-backend-api/internal/database"
 	"github.com/onlylight29/go-ecommerce-backend-api/internal/model"
+	"go.uber.org/zap"
 )
 
 // type UserRepo struct {
@@ -44,8 +45,9 @@ func (ur *userRepository) GetUserByEmail(email string) bool {
 func (ur *userRepository) GetUserByEmailSQLC(email string) bool {
 	user, err := ur.sqlc.GetUserByEmailSQLC(ctx, email)
 	if err != nil {
+		global.Logger.Info("Not found User", zap.Error(err))
 		return false
 	}
 
-	return user.UsrID != uint32(NumberNull)
+	return user.UsrID != 0
 }

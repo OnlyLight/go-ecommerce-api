@@ -14,6 +14,7 @@ services:
       - "8002:8002"
     networks:
       - app-network
+      - steaming-network
 
   mysql:
     image: mysql:8.0
