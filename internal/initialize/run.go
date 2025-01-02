@@ -15,6 +15,8 @@ func Run() {
 
 	// InitMySQL()
 	InitMySQLC()
+	InitServiceInterface()
+
 	InitRedis()
 	InitKafka()
 

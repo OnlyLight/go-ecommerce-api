@@ -5,7 +5,7 @@ GOOSE_DRIVER=mysql
 GOOSE_DBSTRING="root:root1234@tcp(localhost:3306)/shopdevgo"
 GOOSE_MIGRATION_DIR=./sql/schema
 
-run:
+dev:
 	go run ./cmd/${APP_NAME}/main.go
 
 goose-up:
@@ -17,7 +17,5 @@ goose-down:
 goose-reset:
 	goose $(GOOSE_DRIVER) $(GOOSE_DBSTRING) -dir=$(GOOSE_MIGRATION_DIR) reset
 
-sqlc-generate:
+sqlcgen:
 	sqlc generate
-
-.PHONY: run
