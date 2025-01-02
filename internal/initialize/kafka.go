@@ -1,6 +1,9 @@
 package initialize
 
 import (
+	"strings"
+	"time"
+
 	"github.com/onlylight29/go-ecommerce-backend-api/global"
 	"github.com/segmentio/kafka-go"
 	"go.uber.org/zap"
@@ -16,16 +19,30 @@ const (
 )
 
 func InitKafka() {
-	global.KafkaProducer = getKafkaWriter(kafkaURL, kafkaTopic)
+	global.KafkaProducer = getKafkaWriter()
 }
 
 // Producer
-func getKafkaWriter(kafkaURL, topic string) *kafka.Writer {
+func getKafkaWriter() *kafka.Writer {
 	return &kafka.Writer{
 		Addr:     kafka.TCP(kafkaURL),
-		Topic:    topic,
+		Topic:    kafkaTopic,
 		Balancer: &kafka.LeastBytes{},
 	}
+}
+
+// Consumer
+func getKafkaReader(groupID string) *kafka.Reader {
+	brokers := strings.Split(kafkaURL, ",")
+	return kafka.NewReader(kafka.ReaderConfig{
+		Brokers:        brokers,
+		GroupID:        groupID,
+		Topic:          kafkaTopic,
+		MinBytes:       10e3,              // 10KB
+		MaxBytes:       10e6,              // 10MB
+		CommitInterval: time.Second,       // 1s
+		StartOffset:    kafka.FirstOffset, // it will start from the oldest message
+	})
 }
 
 func CloseKafka() {

@@ -1,12 +1,16 @@
 package service
 
-import "context"
+import (
+	"context"
+
+	"github.com/onlylight29/go-ecommerce-backend-api/internal/model"
+)
 
 // Just Leader can modify this file
 type (
 	IUserLogin interface {
 		Login(ctx context.Context) error
-		Register(ctx context.Context) error
+		Register(ctx context.Context, in *model.RegisterInput) (codeResult int, error error)
 		VerifyOTP(ctx context.Context) error
 		UpdatePasswordRegister(ctx context.Context) error
 	}

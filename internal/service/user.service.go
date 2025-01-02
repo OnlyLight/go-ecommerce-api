@@ -55,7 +55,7 @@ func (us *userService) Register(email string, purpose string) int {
 	fmt.Println("OTP::", otp)
 
 	// 3. Save OTP to Redis.
-	err := us.userAuthRepo.AddOTP(email, otp, int64(10*time.Minute))
+	err := us.userAuthRepo.AddOTP(hashEmail, otp, int64(10*time.Minute))
 
 	if err != nil {
 		return response.ErrInvalOTP
