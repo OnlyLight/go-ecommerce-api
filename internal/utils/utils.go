@@ -20,7 +20,7 @@ func GetOtpFromRedis(otp string, err error) (int, error) {
 			return response.ErrInvalOTP, err
 		}
 		global.Logger.Info("OTP not exist")
-		return response.ErrCodeSuccess, fmt.Errorf("OTP not exist")
+		return response.ErrCodeSuccess, nil
 	}
 
 	if otp != "" {

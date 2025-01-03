@@ -15,7 +15,6 @@ import (
 	"github.com/onlylight29/go-ecommerce-backend-api/internal/utils"
 	"github.com/onlylight29/go-ecommerce-backend-api/internal/utils/crypto"
 	"github.com/onlylight29/go-ecommerce-backend-api/internal/utils/random"
-	"github.com/onlylight29/go-ecommerce-backend-api/internal/utils/sendto"
 	"github.com/onlylight29/go-ecommerce-backend-api/pkg/response"
 	"github.com/segmentio/kafka-go"
 	"go.uber.org/zap"
@@ -82,18 +81,22 @@ func (s *sUserLogin) Register(ctx context.Context, in *model.RegisterInput) (cod
 	fmt.Println("OTP::", otpNew)
 
 	//// 5. Save OTP to Redis
-	err = global.RDB.SetEx(ctx, hashKey, otpNew, time.Duration(constance.TIME_OTP_REGISTER)*time.Minute).Err()
+	err = global.RDB.SetEx(ctx, userKey, strconv.Itoa(otpNew), time.Duration(constance.TIME_OTP_REGISTER)*time.Minute).Err()
 	if err != nil {
 		return response.ErrInvalOTP, err
 	}
+	fmt.Println("Save OTP to Redis success!!")
+
+	otpFound2, _ := global.RDB.Get(ctx, userKey).Result()
+	fmt.Printf("OTP found:: %v\n", otpFound2)
 
 	//// 6. Send OTP to user
 	switch in.VerifyType {
 	case constance.EMAIL:
-		err = sendto.SendTextEmailOtp([]string{in.VerifyKey}, constance.HOST_EMAIL, strconv.Itoa(otpNew))
-		if err != nil {
-			return response.ErrSendEmailOtp, err
-		}
+		// err = sendto.SendTextEmailOtp([]string{in.VerifyKey}, constance.HOST_EMAIL, strconv.Itoa(otpNew))
+		// if err != nil {
+		// 	return response.ErrSendEmailOtp, err
+		// }
 
 		//// 7. Send OTP to Kafka
 		body := make(map[string]interface{})

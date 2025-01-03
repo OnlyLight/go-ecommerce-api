@@ -25,14 +25,24 @@ func (c *cUserLogin) Login(ctx *gin.Context) {
 	response.SuccessResponse(ctx, response.ErrCodeSuccess, nil)
 }
 
+// User Registeration doc
+// @Summary      User Registeration
+// @Description  When user is registered send otp to email
+// @Tags         account management
+// @Accept       json
+// @Produce      json
+// @Param        payload body model.RegisterInput true "payload"
+// @Success      200  {object}  response.ResponseData
+// @Router       /user/register [post]
 func (c *cUserLogin) Register(ctx *gin.Context) {
-	var params *model.RegisterInput
-	if err := ctx.ShouldBindJSON(params); err != nil {
+	var params model.RegisterInput
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		global.Logger.Error("Can Bind JSON", zap.Error(err))
 		response.ErrorResponse(ctx, response.ErrCodeParamInvalid)
 		return
 	}
 
-	codeStatus, err := service.UserLogin().Register(ctx, params)
+	codeStatus, err := service.UserLogin().Register(ctx, &params)
 	if err != nil {
 		global.Logger.Error("Can not implement UserLogin interface", zap.Error(err))
 		response.ErrorResponse(ctx, codeStatus)

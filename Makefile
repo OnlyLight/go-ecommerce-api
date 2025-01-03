@@ -19,3 +19,6 @@ goose-reset:
 
 sqlcgen:
 	sqlc generate
+
+swag:
+	swag init -g ./cmd/${APP_NAME}/main.go -o ./docs

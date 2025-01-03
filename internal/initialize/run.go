@@ -1,12 +1,11 @@
 package initialize
 
 import (
-	"fmt"
-
+	"github.com/gin-gonic/gin"
 	"github.com/onlylight29/go-ecommerce-backend-api/global"
 )
 
-func Run() {
+func Run() *gin.Engine {
 	LoadConfig()
 	// fmt.Println("config", global.Config.Server.Port)
 
@@ -20,7 +19,5 @@ func Run() {
 	InitRedis()
 	InitKafka()
 
-	r := InitRouter()
-
-	r.Run(fmt.Sprintf(":%d", global.Config.Server.Port))
+	return InitRouter()
 }
