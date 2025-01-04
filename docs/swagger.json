@@ -1,7 +1,4 @@
 {
-    "schemes": [
-        ""
-    ],
     "swagger": "2.0",
     "info": {
         "description": "This is a sample server celler server.",
@@ -54,6 +51,40 @@
                     }
                 }
             }
+        },
+        "/user/verify_account": {
+            "post": {
+                "description": "Verify OTP",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account management"
+                ],
+                "summary": "User VerifyOTP",
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.VerifyInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseData"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -68,6 +99,17 @@
                 },
                 "verify_type": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.VerifyInput": {
+            "type": "object",
+            "properties": {
+                "verify_code": {
+                    "type": "string"
+                },
+                "verify_key": {
+                    "type": "string"
                 }
             }
         },

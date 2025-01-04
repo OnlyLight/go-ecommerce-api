@@ -9,6 +9,13 @@ definitions:
       verify_type:
         type: integer
     type: object
+  model.VerifyInput:
+    properties:
+      verify_code:
+        type: string
+      verify_key:
+        type: string
+    type: object
   response.ResponseData:
     properties:
       code:
@@ -53,6 +60,26 @@ paths:
       summary: User Registeration
       tags:
       - account management
-schemes:
-- ""
+  /user/verify_account:
+    post:
+      consumes:
+      - application/json
+      description: Verify OTP
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/model.VerifyInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+      summary: User VerifyOTP
+      tags:
+      - account management
 swagger: "2.0"

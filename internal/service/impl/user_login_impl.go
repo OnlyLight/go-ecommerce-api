@@ -2,7 +2,6 @@ package impl
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -16,8 +15,6 @@ import (
 	"github.com/onlylight29/go-ecommerce-backend-api/internal/utils/crypto"
 	"github.com/onlylight29/go-ecommerce-backend-api/internal/utils/random"
 	"github.com/onlylight29/go-ecommerce-backend-api/pkg/response"
-	"github.com/segmentio/kafka-go"
-	"go.uber.org/zap"
 )
 
 type sUserLogin struct {
@@ -35,7 +32,7 @@ func (s *sUserLogin) Login(ctx context.Context) error {
 	panic("unimplement yet")
 }
 
-func (s *sUserLogin) Register(ctx context.Context, in *model.RegisterInput) (codeResult int, error error) {
+func (s *sUserLogin) Register(ctx context.Context, in *model.RegisterInput) (codeResult int, err error) {
 	// 1. Hash email
 	fmt.Printf("VerifyKey:: %s\n", in.VerifyKey)
 	fmt.Printf("VerifyType:: %d\n", in.VerifyType)
@@ -69,7 +66,7 @@ func (s *sUserLogin) Register(ctx context.Context, in *model.RegisterInput) (cod
 	// if otpFound != "" {
 	// 	return response.ErrCodeOtpAlreadyExists, fmt.Errorf("OTP already exists")
 	// }
-	if errCode, errMsg := utils.GetOtpFromRedis(otpFound, err); errMsg != nil {
+	if errCode, errMsg := utils.HandleOTPFound(otpFound, err); errMsg != nil {
 		return errCode, errMsg
 	}
 
@@ -98,25 +95,25 @@ func (s *sUserLogin) Register(ctx context.Context, in *model.RegisterInput) (cod
 		// 	return response.ErrSendEmailOtp, err
 		// }
 
-		//// 7. Send OTP to Kafka
-		body := make(map[string]interface{})
-		body["otp"] = otpNew
-		body["email"] = in
+		// // 7. Send OTP to Kafka
+		// body := make(map[string]interface{})
+		// body["otp"] = otpNew
+		// body["email"] = in
 
-		jsonBody, _ := json.Marshal(body)
+		// jsonBody, _ := json.Marshal(body)
 
-		message := kafka.Message{
-			Key:   []byte("otp-auth"),
-			Value: []byte(jsonBody),
-			Time:  time.Now(),
-		}
+		// message := kafka.Message{
+		// 	Key:   []byte("otp-auth"),
+		// 	Value: []byte(jsonBody),
+		// 	Time:  time.Now(),
+		// }
 
-		err = global.KafkaProducer.WriteMessages(context.Background(), message)
+		// err = global.KafkaProducer.WriteMessages(context.Background(), message)
 
-		if err != nil {
-			global.Logger.Error("Error while writing message to kafka", zap.Error(err))
-			return response.ErrSendEmailOtp, err
-		}
+		// if err != nil {
+		// 	global.Logger.Error("Error while writing message to kafka", zap.Error(err))
+		// 	return response.ErrSendEmailOtp, err
+		// }
 
 		// // 7.2. Get OTP from Kafka
 
@@ -148,8 +145,37 @@ func (s *sUserLogin) Register(ctx context.Context, in *model.RegisterInput) (cod
 	return response.ErrCodeSuccess, nil
 }
 
-func (s *sUserLogin) VerifyOTP(ctx context.Context) error {
-	panic("unimplement yet")
+func (s *sUserLogin) VerifyOTP(ctx context.Context, in *model.VerifyInput) (out model.VerifyOTPOutput, err error) {
+	// 1. Hash email
+	hashKey := crypto.GetHash(strings.ToLower(in.VerifyKey))
+
+	// 2. get OTP from Redis
+	otpFound, err := global.RDB.Get(ctx, utils.GetUserKey(hashKey)).Result()
+	if err != nil {
+		return out, err
+	}
+
+	err = utils.HandleOTPValidation(ctx, hashKey, otpFound, in.VerifyCode)
+	if err != nil {
+		return out, err
+	}
+
+	// infoOTP, err := s.r.GetInfoOTP(ctx, hashKey)
+	// if err != nil {
+	// 	return out, err
+	// }
+
+	// Update status verified
+	// err = s.r.UpdateUserVerificationStatus(ctx, hashKey)
+	// if err != nil {
+	// 	return out, err
+	// }
+
+	// // Output
+	// out.Token = infoOTP.VerifyKeyHash
+	// out.Message = "Success"
+
+	return out, err
 }
 
 func (s *sUserLogin) UpdatePasswordRegister(ctx context.Context) error {

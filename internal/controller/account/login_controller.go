@@ -11,8 +11,7 @@ import (
 
 var Login = new(cUserLogin)
 
-type cUserLogin struct {
-}
+type cUserLogin struct{}
 
 func (c *cUserLogin) Login(ctx *gin.Context) {
 	err := service.UserLogin().Login(ctx)
@@ -44,10 +43,37 @@ func (c *cUserLogin) Register(ctx *gin.Context) {
 
 	codeStatus, err := service.UserLogin().Register(ctx, &params)
 	if err != nil {
-		global.Logger.Error("Can not implement UserLogin interface", zap.Error(err))
+		global.Logger.Error("Can not implement UserLogin.Register interface", zap.Error(err))
 		response.ErrorResponse(ctx, codeStatus)
 		return
 	}
 
 	response.SuccessResponse(ctx, codeStatus, nil)
+}
+
+// User VerifyOTP doc
+// @Summary      User VerifyOTP
+// @Description  Verify OTP
+// @Tags         account management
+// @Accept       json
+// @Produce      json
+// @Param        payload body model.VerifyInput true "payload"
+// @Success      200  {object}  response.ResponseData
+// @Router       /user/verify_account [post]
+func (c *cUserLogin) VerifyOTP(ctx *gin.Context) {
+	var params model.VerifyInput
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		global.Logger.Error("Can Bind JSON", zap.Error(err))
+		response.ErrorResponse(ctx, response.ErrCodeParamInvalid)
+		return
+	}
+
+	out, err := service.UserLogin().VerifyOTP(ctx, &params)
+	if err != nil {
+		global.Logger.Error("Can not implement UserLogin.VerifyOTP interface", zap.Error(err))
+		response.ErrorResponse(ctx, response.ErrInvalOTP)
+		return
+	}
+
+	response.SuccessResponse(ctx, response.ErrCodeSuccess, out)
 }

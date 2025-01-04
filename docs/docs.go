@@ -57,6 +57,40 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user/verify_account": {
+            "post": {
+                "description": "Verify OTP",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account management"
+                ],
+                "summary": "User VerifyOTP",
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.VerifyInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseData"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -71,6 +105,17 @@ const docTemplate = `{
                 },
                 "verify_type": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.VerifyInput": {
+            "type": "object",
+            "properties": {
+                "verify_code": {
+                    "type": "string"
+                },
+                "verify_key": {
+                    "type": "string"
                 }
             }
         },
@@ -94,7 +139,7 @@ var SwaggerInfo = &swag.Spec{
 	Version:          "1.0.0",
 	Host:             "localhost:8002",
 	BasePath:         "/v1/api",
-	Schemes:          []string{""},
+	Schemes:          []string{},
 	Title:            "API Documentation Ecommerce Backend",
 	Description:      "This is a sample server celler server.",
 	InfoInstanceName: "swagger",
