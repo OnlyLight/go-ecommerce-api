@@ -4,7 +4,7 @@ FROM `pre_go_acc_user_base_9999`
 WHERE user_account = ?;
 
 -- name: GetOneUserInfoAdmin :one
-SELECT user_id, user_account, user_password, user_salt, user_login_time, user_logout_time, ... , user_created_at, user_updated_at
+SELECT user_id, user_account, user_password, user_salt, user_login_time, user_logout_time, user_login_ip , user_created_at, user_updated_at
 FROM `pre_go_acc_user_base_9999`
 WHERE user_account = ?;
 

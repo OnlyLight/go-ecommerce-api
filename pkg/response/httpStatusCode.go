@@ -13,6 +13,7 @@ const (
 
 	// Error Login
 	ErrCodeOtpAlreadyExists = 60009
+	ErrCodeOtpNotExists     = 60008
 )
 
 var msg = map[int]string{
@@ -26,4 +27,5 @@ var msg = map[int]string{
 	ErrCodeUserAlreadyExists: "User already exists",
 
 	ErrCodeOtpAlreadyExists: "OTP exists but not registered",
+	ErrCodeOtpNotExists:     "OTP not exists",
 }

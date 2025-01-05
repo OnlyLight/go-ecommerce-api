@@ -178,6 +178,66 @@ func (s *sUserLogin) VerifyOTP(ctx context.Context, in *model.VerifyInput) (out 
 	return out, err
 }
 
-func (s *sUserLogin) UpdatePasswordRegister(ctx context.Context) error {
-	panic("unimplement yet")
+func (s *sUserLogin) UpdatePasswordRegister(ctx context.Context, token string, password string) (userId int, err error) {
+	// //1. Check Token is already verified --- user_verify table
+	// infoOTP, err := s.r.GetInfoOTP(ctx, token)
+	// if err != nil {
+	// 	return response.ErrCodeOtpNotExists, err
+	// }
+
+	// // 2. check OTP is verified
+	// if infoOTP == nil {
+	// 	return response.ErrCodeOtpNotExists, fmt.Errorf("OTP not verified")
+	// }
+
+	// 2.1 check token is exist on user_base table
+
+	// // 3. Update user_base password
+	// userBase := database.AddUserBaseParams{}
+	// userBase.UserAccount = infoOTP.VerifyKey
+
+	// userSalt, err := crypto.GenerateSalt(16)
+	// if err != nil {
+	// 	return response.ErrCodeOtpNotExists, err
+	// }
+
+	// userBase.UserSalt = userSalt
+	// userBase.Password = crypto.GetHash(password + userSalt)
+
+	// // 4. add userBase to user_base table
+	// newUserBase, err := s.r.AddUserBase(ctx, userBase)
+	// if err != nil {
+	// 	return response.ErrCodeOtpNotExists, err
+	// }
+
+	// userId, err := newUserBase.LastInsertId()
+	// if err != nil {
+	// 	return response.ErrCodeOtpNotExists, err
+	// }
+
+	// // add user_id to user_info table
+	// newUserInfo, err := s.r.AddUserHaveUserId(ctx, database.AddUserHaveUserIdParams{
+	// 	UserID:       uint64(user_id),
+	// 	UserAccount:  inforOTP.VerifyKey,
+	// 	UserNickName: sql.NullString{String: inforOTP.VerifyKey, Valid: true},
+	// 	UserAvatar:   sql.NullString{String: "", Valid: true},
+	// 	UserState:    1,
+	// 	UserMobile:   sql.NullString{String: "", Valid: true},
+	// 	UserGender:   sql.NullInt16{Int16: 0, Valid: true},
+	// 	UserBirthday: sql.NullTime{Time: time.Time{}, Valid: false},
+	// 	UserEmail:    sql.NullString{String: inforOTP.VerifyKey, Valid: true},
+	// 	UserIsAuthentication: 1,
+	// })
+
+	// if err != nil {
+	// 	return response.ErrCodeOtpNotExists, err
+	// }
+
+	// user_Id, err := newUserInfo.LastInsertId()
+	// if err != nil {
+	// 	return response.ErrCodeOtpNotExists, err
+	// }
+
+	// return int(user_Id), nil
+	return 0, nil
 }
