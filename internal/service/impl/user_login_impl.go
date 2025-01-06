@@ -28,8 +28,54 @@ func NewUserLoginImpl(r *database.Queries) *sUserLogin {
 }
 
 // Implement interface of IUserLogin
-func (s *sUserLogin) Login(ctx context.Context) error {
-	panic("unimplement yet")
+func (s *sUserLogin) Login(ctx context.Context, in *model.LoginInput) (codeResult int, out model.LoginOutput, err error) {
+	// userBase, err := s.r.GetOneUserInfo(ctx, in.UserAccount)
+	// if err != nil {
+	// 	return response.ErrCodeAuthFailed, out, err
+	// }
+
+	// 2. Check password
+	// if !crypto.MatchingPassword(userBase.UserPassword, in.Password, userBase.UserSalt, in.Password) {
+	// 	return response.ErrCodeAuthFailed, out, fmt.Errorf("does not match password:: %v", err)
+	// }
+
+	// 3. Check two-factor authentication
+	// // 4. Update password time with goroutine async
+	// go s.r.LoginUserBase(ctx, database.LoginUserBaseParams{
+	// 	UserLoginIp:  sql.NullString{String: "127.0.0.1", Valid: true},
+	// 	UserAccount:  in.UserAccount,
+	// 	UserPassword: in.UserPassword,
+	// })
+
+	// // 5. Create UUID User
+	// subToken := utils.GenerateCliTokenUUID(userBase.UserID)
+	// fmt.Println("subToken::", subToken)
+
+	// // 6. Get UserInfo table
+	// infoUser, err := s.r.GetUser(ctx, uint64(userBase.UserID))
+	// if err != nil {
+	// 	return response.ErrCodeAuthFailed, out, err
+	// }
+
+	// 7. Convert to json in order to save to Redis
+	// infoUserJson, err := json.Marshal(infoUser)
+	// if err != nil {
+	// 	return response.ErrCodeAuthFailed, out, fmt.Errorf("Convert to JSON failed:: %v", err)
+	// }
+
+	// 8. Give infoUserJson to Redis with key = subToken
+	// err = global.RDB.Set(ctx, subToken, infoUserJson, time.Duration(constance.TIME_OTP_REGISTER)*time.Minute).Err()
+	// if err != nil {
+	// 	return response.ErrCodeAuthFailed, out, err
+	// }
+
+	// // 9. create token
+	// out.Token, err = auth.CreateToken(subToken)
+	// if err != nil {
+	// 	return
+	// }
+
+	return response.ErrCodeSuccess, out, nil
 }
 
 func (s *sUserLogin) Register(ctx context.Context, in *model.RegisterInput) (codeResult int, err error) {

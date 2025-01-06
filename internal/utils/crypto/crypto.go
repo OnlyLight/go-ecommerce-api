@@ -29,3 +29,8 @@ func HashPassword(password string, salt string) string {
 	// [:] is used to convert array to slice
 	return hex.EncodeToString(hash[:])
 }
+
+func MatchingPassword(storeHash string, password string, salt string) bool {
+	hashPassword := HashPassword(password, salt)
+	return storeHash == hashPassword
+}

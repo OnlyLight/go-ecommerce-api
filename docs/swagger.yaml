@@ -1,5 +1,12 @@
 basePath: /v1/api
 definitions:
+  model.LoginInput:
+    properties:
+      user_account:
+        type: string
+      user_password:
+        type: string
+    type: object
   model.RegisterInput:
     properties:
       verify_key:
@@ -8,6 +15,13 @@ definitions:
         type: string
       verify_type:
         type: integer
+    type: object
+  model.UpdatePasswordRegisterInput:
+    properties:
+      user_password:
+        type: string
+      user_token:
+        type: string
     type: object
   model.VerifyInput:
     properties:
@@ -38,6 +52,28 @@ info:
   title: API Documentation Ecommerce Backend
   version: 1.0.0
 paths:
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: Login
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/model.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+      summary: User Login
+      tags:
+      - account management
   /user/register:
     post:
       consumes:
@@ -58,6 +94,28 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseData'
       summary: User Registeration
+      tags:
+      - account management
+  /user/update_pass_register:
+    post:
+      consumes:
+      - application/json
+      description: Update Password Register
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdatePasswordRegisterInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+      summary: User UpdatePasswordRegister
       tags:
       - account management
   /user/verify_account:

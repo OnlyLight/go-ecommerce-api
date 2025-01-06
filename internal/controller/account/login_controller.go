@@ -13,15 +13,31 @@ var Login = new(cUserLogin)
 
 type cUserLogin struct{}
 
+// User Login doc
+// @Summary      User Login
+// @Description  Login
+// @Tags         account management
+// @Accept       json
+// @Produce      json
+// @Param        payload body model.LoginInput true "payload"
+// @Success      200  {object}  response.ResponseData
+// @Router       /user/login [post]
 func (c *cUserLogin) Login(ctx *gin.Context) {
-	err := service.UserLogin().Login(ctx)
-	if err != nil {
-		global.Logger.Error("Can not implement UserLogin interface", zap.Error(err))
+	var params model.LoginInput
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		global.Logger.Error("Can Bind JSON", zap.Error(err))
 		response.ErrorResponse(ctx, response.ErrCodeParamInvalid)
 		return
 	}
 
-	response.SuccessResponse(ctx, response.ErrCodeSuccess, nil)
+	codeResult, dataResult, err := service.UserLogin().Login(ctx, &params)
+	if err != nil {
+		global.Logger.Error("Can not implement UserLogin interface", zap.Error(err))
+		response.ErrorResponse(ctx, codeResult)
+		return
+	}
+
+	response.SuccessResponse(ctx, codeResult, dataResult)
 }
 
 // User Registeration doc

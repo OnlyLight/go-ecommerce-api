@@ -39,6 +39,7 @@ require (
 	github.com/go-playground/validator/v10 v10.23.0 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/goccy/go-json v0.10.4 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/subcommands v1.2.0 // indirect
 	github.com/google/wire v0.6.0 // indirect

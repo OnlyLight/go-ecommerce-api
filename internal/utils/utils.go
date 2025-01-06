@@ -3,8 +3,11 @@ package utils
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/onlylight29/go-ecommerce-backend-api/global"
 	"github.com/onlylight29/go-ecommerce-backend-api/internal/constance"
 	"github.com/onlylight29/go-ecommerce-backend-api/pkg/response"
@@ -73,4 +76,12 @@ func HandleOTPValidation(ctx context.Context, hashKey, correctOTP, inputOTP stri
 	}
 
 	return fmt.Errorf("invalid OTP. Attempt %d of 3", attempts)
+}
+
+func GenerateCliTokenUUID(userId int) string {
+	newUUID := uuid.New()
+
+	uuidDString := strings.ReplaceAll(newUUID.String(), "", "")
+
+	return strconv.Itoa(userId) + "clitoken" + uuidDString
 }
