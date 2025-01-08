@@ -9,7 +9,8 @@ const (
 	ErrSendEmailOtp = 30003
 
 	// Error Authenticate
-	ErrCodeAuthFailed = 40005
+	ErrCodeAuthFailed      = 40005
+	ErrCodeAuthTokenFailed = 40001
 
 	// Error Register
 	ErrCodeUserAlreadyExists = 50002
@@ -29,7 +30,8 @@ var msg = map[int]string{
 	ErrInvalOTP:     "OTP is invalid",
 	ErrSendEmailOtp: "Send email OTP failed",
 
-	ErrCodeAuthFailed: "Authenticate Failed",
+	ErrCodeAuthFailed:      "Authenticate Failed",
+	ErrCodeAuthTokenFailed: "Unauthorized",
 
 	ErrCodeUserAlreadyExists: "User already exists",
 

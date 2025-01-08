@@ -39,3 +39,27 @@ func CreateToken(uuidToken string) (string, error) {
 		},
 	})
 }
+
+func ParseJwtTokenSubject(token string) (*jwt.RegisteredClaims, error) {
+	tokenClaims, err := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(jwtToken *jwt.Token) (interface{}, error) {
+		return []byte(global.Config.Jwt.ApiSecretKey), nil
+	})
+
+	if tokenClaims != nil {
+		if claims, ok := tokenClaims.Claims.(*jwt.RegisteredClaims); ok && tokenClaims.Valid {
+			return claims, nil
+		}
+	}
+
+	return nil, err
+}
+
+func VerifyTokenSubject(token string) (*jwt.RegisteredClaims, error) {
+	claims, err := ParseJwtTokenSubject(token)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return claims, nil
+}

@@ -3,6 +3,7 @@ package user
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/onlylight29/go-ecommerce-backend-api/internal/controller/account"
+	"github.com/onlylight29/go-ecommerce-backend-api/internal/middlewares"
 )
 
 type UserRouter struct {
@@ -23,7 +24,9 @@ func (ur *UserRouter) InitUserRouter(router *gin.RouterGroup) {
 
 	// Private routes
 	userRouterPrivate := router.Group("/user")
+	userRouterPrivate.Use(middlewares.AuthenMiddleware())
 	{
 		userRouterPrivate.GET("/get_info")
+		userRouterPrivate.POST("/two_factor/setup", account.TwoFA.SetupTwoFactorAuth)
 	}
 }
