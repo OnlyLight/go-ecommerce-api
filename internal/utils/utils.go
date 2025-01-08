@@ -19,19 +19,19 @@ func GetUserKey(hashKey string) string {
 	return fmt.Sprintf("u:%s:otp", hashKey)
 }
 
-func HandleOTPFound(otp string, err error) (int, error) {
+func HandleGetKeyRedis(rs string, err error) (int, error) {
 	if err != nil {
 		if err != redis.Nil {
-			global.Logger.Error("Get OTP failed", zap.Error(err))
+			global.Logger.Error("Get failed", zap.Error(err))
 			return response.ErrInvalOTP, err
 		}
-		global.Logger.Info("OTP not exist")
+		global.Logger.Info("Not exist")
 		return response.ErrCodeSuccess, nil
 	}
 
-	if otp != "" {
-		global.Logger.Error("OTP exists but not registered")
-		return response.ErrCodeOtpAlreadyExists, fmt.Errorf("OTP exists but not registered")
+	if rs != "" {
+		global.Logger.Error("exists but have no value")
+		return response.ErrCodeOtpAlreadyExists, fmt.Errorf("exists but have no value")
 	}
 
 	return response.ErrCodeSuccess, nil

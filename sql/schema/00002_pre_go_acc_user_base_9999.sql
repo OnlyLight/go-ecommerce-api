@@ -11,11 +11,11 @@ CREATE TABLE IF NOT EXISTS `pre_go_acc_user_base_9999` (
   user_login_ip VARCHAR(45) NULL COMMENT 'User login IP',
 
   user_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation time',
-  user_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Record update time'
+  user_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Record update time',
 
   -- Index for optimize query
-  UNIQUE KEY `unique_user_account` (`user_account`),
-); ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='pre_go_acc_user_base_9999';
+  UNIQUE KEY `unique_user_account` (`user_account`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='pre_go_acc_user_base_9999';
 -- +goose StatementEnd
 
 -- +goose Down
