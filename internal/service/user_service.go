@@ -16,7 +16,7 @@ type (
 
 		IsTwoFactorEnabled(ctx context.Context, userId int) (codeResult int, rs bool, err error)
 		SetupTwoFactorAuth(ctx context.Context, in *model.SetupTwoFactorAuthInput) (codeResult int, err error)
-		VerifyTwoFactorAuth(ctx context.Context, in *model.VerifyInput) (codeResult int, err error)
+		VerifyTwoFactorAuth(ctx context.Context, in *model.TwoFactorVerificationInput) (codeResult int, err error)
 	}
 
 	IUserInfo interface {

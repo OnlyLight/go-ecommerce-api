@@ -38,7 +38,7 @@ type SetupTwoFactorAuthInput struct {
 	TwoFactorEmail    string `json:"two_factor_email"`
 }
 
-type TwoFactorVerificationAuth struct {
+type TwoFactorVerificationInput struct {
 	UserId        uint32 `json:"user_id"`
 	TwoFactorCode string `json:"two_factor_code"`
 }

@@ -19,7 +19,8 @@ const (
 	ErrCodeOtpAlreadyExists = 60009
 	ErrCodeOtpNotExists     = 60008
 
-	ErrCodeTwoFactorAuthSetupFailed = 80001
+	ErrCodeTwoFactorAuthSetupFailed  = 80001
+	ErrCodeTwoFactorAuthVerifyFailed = 80002
 )
 
 var msg = map[int]string{
@@ -38,5 +39,6 @@ var msg = map[int]string{
 	ErrCodeOtpAlreadyExists: "OTP exists but not registered",
 	ErrCodeOtpNotExists:     "OTP not exists",
 
-	ErrCodeTwoFactorAuthSetupFailed: "Two Factor Authentication setup failed",
+	ErrCodeTwoFactorAuthSetupFailed:  "Two Factor Authentication Setup failed",
+	ErrCodeTwoFactorAuthVerifyFailed: "Two Factor Authentication Verify failed",
 }

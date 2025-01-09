@@ -20,6 +20,7 @@ const (
 
 func InitKafka() {
 	global.KafkaProducer = getKafkaWriter()
+	global.Logger.Info("Connected to Kafka")
 }
 
 // Producer

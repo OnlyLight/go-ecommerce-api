@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -23,11 +24,14 @@ func AuthenMiddleware() gin.HandlerFunc {
 
 		// 2. Validate jwt token by subject
 		claim, errClaim := auth.VerifyTokenSubject(jwtToken)
+		fmt.Println("claim::", claim)
+
 		if errClaim != nil {
 			response.ErrorResponse(ctx, response.ErrCodeAuthTokenFailed)
+			fmt.Errorf("errClaim::%v", errClaim)
 			return
 		}
-		log.Println("Claim UUID::", claim.Subject)
+		fmt.Println("Claim UUID::", claim.Subject)
 
 		// 3. Update claims to context
 		c := context.WithValue(ctx.Request.Context(), "subjectUUID", claim.Subject)

@@ -19,6 +19,10 @@ func GetUserKey(hashKey string) string {
 	return fmt.Sprintf("u:%s:otp", hashKey)
 }
 
+func Get2FaKey(hashKey string) string {
+	return fmt.Sprintf("2fa:%s", hashKey)
+}
+
 func HandleGetKeyRedis(rs string, err error) (int, error) {
 	if err != nil {
 		if err != redis.Nil {
@@ -27,11 +31,6 @@ func HandleGetKeyRedis(rs string, err error) (int, error) {
 		}
 		global.Logger.Info("Not exist")
 		return response.ErrCodeSuccess, nil
-	}
-
-	if rs != "" {
-		global.Logger.Error("exists but have no value")
-		return response.ErrCodeOtpAlreadyExists, fmt.Errorf("exists but have no value")
 	}
 
 	return response.ErrCodeSuccess, nil

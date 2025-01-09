@@ -13,7 +13,7 @@ import (
 const getInfoOTP = `-- name: GetInfoOTP :one
 SELECT verify_id, verify_otp, verify_key, verify_key_hash, verify_type, is_verified, is_deleted, verify_created_at, verify_updated_at
 FROM ` + "`" + `pre_go_acc_user_verify_9999` + "`" + `
-WHERE verify_key_hash = ? AND is_verified = 1
+WHERE verify_key_hash = ?
 `
 
 type GetInfoOTPRow struct {

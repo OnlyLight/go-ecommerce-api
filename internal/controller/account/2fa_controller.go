@@ -16,16 +16,16 @@ var TwoFA = new(sUser2FA)
 
 type sUser2FA struct{}
 
-// User Registeration doc
-// @Summary      User Registeration
-// @Description  When user is registered send otp to email
-// @Tags         account management
+// User SetupTwoFactorAuth doc
+// @Summary      User SetupTwoFactorAuth
+// @Description  SetupTwoFactorAuth
+// @Tags         account 2fa
 // @Accept       json
 // @Produce      json
 // @Param        Authorization header string true "Authorization token"
 // @Param        payload body model.SetupTwoFactorAuthInput true "payload"
 // @Success      200  {object}  response.ResponseData
-// @Router       /two_factor/setup [post]
+// @Router       /user/two-factor/setup [post]
 func (s *sUser2FA) SetupTwoFactorAuth(ctx *gin.Context) {
 	var params model.SetupTwoFactorAuthInput
 	if err := ctx.ShouldBindJSON(&params); err != nil {
@@ -40,11 +40,45 @@ func (s *sUser2FA) SetupTwoFactorAuth(ctx *gin.Context) {
 		return
 	}
 
-	log.Println("UserId::", userId)
+	log.Println("UserId::SetupTwoFactorAuth::", userId)
 	params.UserId = uint32(userId)
 	codeResult, err := service.UserLogin().SetupTwoFactorAuth(ctx, &params)
 	if err != nil {
 		response.ErrorResponse(ctx, response.ErrCodeTwoFactorAuthSetupFailed)
+	}
+
+	response.SuccessResponse(ctx, codeResult, nil)
+}
+
+// User VerifyTwoFactorAuth doc
+// @Summary      User VerifyTwoFactorAuth
+// @Description  VerifyTwoFactorAuth
+// @Tags         account 2fa
+// @Accept       json
+// @Produce      json
+// @Param        Authorization header string true "Authorization token"
+// @Param        payload body model.TwoFactorVerificationInput true "payload"
+// @Success      200  {object}  response.ResponseData
+// @Router       /user/two-factor/verify [post]
+func (s *sUser2FA) VerifyTwoFactorAuth(ctx *gin.Context) {
+	var params model.TwoFactorVerificationInput
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		global.Logger.Error("Can Bind JSON", zap.Error(err))
+		response.ErrorResponse(ctx, response.ErrCodeTwoFactorAuthVerifyFailed)
+		return
+	}
+
+	userId, err := context.GetUserIdFromUUID(ctx.Request.Context())
+	if err != nil {
+		response.ErrorResponse(ctx, response.ErrCodeTwoFactorAuthVerifyFailed)
+		return
+	}
+
+	log.Println("UserId::VerifyTwoFactorAuth::", userId)
+	params.UserId = uint32(userId)
+	codeResult, err := service.UserLogin().VerifyTwoFactorAuth(ctx, &params)
+	if err != nil {
+		response.ErrorResponse(ctx, response.ErrCodeTwoFactorAuthVerifyFailed)
 	}
 
 	response.SuccessResponse(ctx, codeResult, nil)

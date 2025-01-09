@@ -25,6 +25,13 @@ definitions:
       user_id:
         type: integer
     type: object
+  model.TwoFactorVerificationInput:
+    properties:
+      two_factor_code:
+        type: string
+      user_id:
+        type: integer
+    type: object
   model.UpdatePasswordRegisterInput:
     properties:
       user_password:
@@ -61,33 +68,6 @@ info:
   title: API Documentation Ecommerce Backend
   version: 1.0.0
 paths:
-  /two_factor/setup:
-    post:
-      consumes:
-      - application/json
-      description: When user is registered send otp to email
-      parameters:
-      - description: Authorization token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: payload
-        in: body
-        name: payload
-        required: true
-        schema:
-          $ref: '#/definitions/model.SetupTwoFactorAuthInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseData'
-      summary: User Registeration
-      tags:
-      - account management
   /user/login:
     post:
       consumes:
@@ -132,6 +112,60 @@ paths:
       summary: User Registeration
       tags:
       - account management
+  /user/two-factor/setup:
+    post:
+      consumes:
+      - application/json
+      description: SetupTwoFactorAuth
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/model.SetupTwoFactorAuthInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+      summary: User SetupTwoFactorAuth
+      tags:
+      - account 2fa
+  /user/two-factor/verify:
+    post:
+      consumes:
+      - application/json
+      description: VerifyTwoFactorAuth
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/model.TwoFactorVerificationInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+      summary: User VerifyTwoFactorAuth
+      tags:
+      - account 2fa
   /user/update_pass_register:
     post:
       consumes:

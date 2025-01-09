@@ -21,4 +21,3 @@ CREATE TABLE IF NOT EXISTS `pre_go_acc_user_verify_9999` (
 -- +goose StatementBegin
 DROP TABLE IF EXISTS `pre_go_acc_user_verify_9999`;
 -- +goose StatementEnd
-verify_otp

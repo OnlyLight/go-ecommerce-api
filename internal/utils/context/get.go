@@ -3,7 +3,6 @@ package context
 import (
 	"context"
 	"errors"
-	"log"
 
 	"github.com/onlylight29/go-ecommerce-backend-api/internal/utils/cache"
 )
@@ -24,7 +23,7 @@ func GetSubjectUUID(ctx context.Context) (string, error) {
 
 func GetUserIdFromUUID(ctx context.Context) (uint64, error) {
 	sUUID, err := GetSubjectUUID(ctx)
-	log.Println("sUUID", sUUID)
+
 	if err != nil {
 		return 0, err
 	}

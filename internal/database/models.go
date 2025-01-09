@@ -141,31 +141,3 @@ type PreGoAccUserVerify9999 struct {
 	// Record update time
 	VerifyUpdatedAt sql.NullTime
 }
-
-// Account
-type PreGoCrmUserC struct {
-	// ID
-	UsrID uint32
-	// Email
-	UsrEmail string
-	// Phone
-	UsrPhone string
-	// Username
-	UsrUsername string
-	// Password
-	UsrPassword string
-	// Created At
-	UsrCreatedAt int32
-	// Updated At
-	UsrUpdatedAt int32
-	// Create IP At
-	UsrCreateIpAt string
-	// Last Login At
-	UsrLastLoginAt int32
-	// Last Login IP
-	UsrLastLoginIp string
-	// Login Times
-	UsrLoginTimes int32
-	// Status 1:Enable 0:Disabled -1:Deleted
-	UsrStatus bool
-}

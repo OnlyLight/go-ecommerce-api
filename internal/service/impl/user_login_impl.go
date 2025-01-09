@@ -17,6 +17,7 @@ import (
 	"github.com/onlylight29/go-ecommerce-backend-api/internal/utils/auth"
 	"github.com/onlylight29/go-ecommerce-backend-api/internal/utils/crypto"
 	"github.com/onlylight29/go-ecommerce-backend-api/internal/utils/random"
+	"github.com/onlylight29/go-ecommerce-backend-api/internal/utils/sendto"
 	"github.com/onlylight29/go-ecommerce-backend-api/pkg/response"
 	"go.uber.org/zap"
 )
@@ -31,6 +32,8 @@ func NewUserLoginImpl(r *database.Queries) *sUserLogin {
 	}
 }
 
+// Register -> verify_OTP -> change Pass -> login
+
 // Implement interface of IUserLogin
 func (s *sUserLogin) Login(ctx context.Context, in *model.LoginInput) (codeResult int, out model.LoginOutput, err error) {
 	userBase, err := s.r.GetOneUserInfo(ctx, in.UserAccount)
@@ -44,6 +47,34 @@ func (s *sUserLogin) Login(ctx context.Context, in *model.LoginInput) (codeResul
 	}
 
 	// 3. Check two-factor authentication
+	isTwoFactorEnable, err := s.r.IsTwoFactorEnabled(ctx, uint32(userBase.UserID))
+	if err != nil {
+		return response.ErrCodeAuthFailed, out, fmt.Errorf("does not match")
+	}
+
+	if isTwoFactorEnable > 0 {
+		// 3.1 Send otp to in.TwoFactorEmail
+		keyUserLoginTwoFactor := crypto.GetHash(utils.Get2FaKey(strconv.Itoa(int(userBase.UserID))))
+		err = global.RDB.Set(ctx, keyUserLoginTwoFactor, "111111", time.Duration(constance.TIME_OTP_REGISTER)*time.Minute).Err()
+		if err != nil {
+			return response.ErrCodeAuthFailed, out, fmt.Errorf("set OTP register failed")
+		}
+
+		infoUserTwoFactor, err := s.r.GetTwoFactorMethodByIDAndType(ctx, database.GetTwoFactorMethodByIDAndTypeParams{
+			UserID:            uint32(userBase.UserID),
+			TwoFactorAuthType: database.PreGoAccUserTwoFactor9999TwoFactorAuthTypeEMAIL,
+		})
+
+		if err != nil {
+			return response.ErrCodeAuthFailed, out, fmt.Errorf("get OTP register failed")
+		}
+
+		// send mail
+		go sendto.SendTextEmailOtp([]string{infoUserTwoFactor.TwoFactorEmail.String}, constance.HOST_EMAIL, "111111")
+		out.Message = "Send OTP 2FA to Email..."
+
+		return response.ErrCodeSuccess, out, nil
+	}
 
 	// 4. Update password time with goroutine async
 	go s.r.LoginUserBase(ctx, database.LoginUserBaseParams{
@@ -121,6 +152,10 @@ func (s *sUserLogin) Register(ctx context.Context, in *model.RegisterInput) (cod
 		return errCode, errMsg
 	}
 
+	if otpFound != "" {
+		return response.ErrCodeOtpAlreadyExists, fmt.Errorf("OTP already exists")
+	}
+
 	//// 4. Generate OTP
 	otpNew := random.GenerateSixDigitOTP()
 	if in.VerifyPurpose == "TEST_USER" {
@@ -136,6 +171,7 @@ func (s *sUserLogin) Register(ctx context.Context, in *model.RegisterInput) (cod
 	fmt.Println("Save OTP to Redis success!!")
 
 	otpFound2, _ := global.RDB.Get(ctx, userKey).Result()
+	fmt.Printf("userKey::%s\n", userKey)
 	fmt.Printf("OTP found:: %v\n", otpFound2)
 
 	//// 6. Send OTP to user
@@ -199,34 +235,37 @@ func (s *sUserLogin) Register(ctx context.Context, in *model.RegisterInput) (cod
 func (s *sUserLogin) VerifyOTP(ctx context.Context, in *model.VerifyInput) (out model.VerifyOTPOutput, err error) {
 	// 1. Hash email
 	hashKey := crypto.GetHash(strings.ToLower(in.VerifyKey))
+	userKey := utils.GetUserKey(hashKey)
 
 	// 2. get OTP from Redis
-	otpFound, err := global.RDB.Get(ctx, utils.GetUserKey(hashKey)).Result()
+	otpFound, err := global.RDB.Get(ctx, userKey).Result()
 	if err != nil {
-		return out, err
+		return out, fmt.Errorf("err::otpFound::%v", err)
 	}
+	fmt.Printf("otpFound::%v", otpFound)
 
 	err = utils.HandleOTPValidation(ctx, hashKey, otpFound, in.VerifyCode)
 	if err != nil {
-		return out, err
+		return out, fmt.Errorf("err::HandleOTPValidation::%v", err)
 	}
 
 	infoOTP, err := s.r.GetInfoOTP(ctx, hashKey)
 	if err != nil {
-		return out, err
+		return out, fmt.Errorf("err::infoOTP::%v", err)
 	}
+	fmt.Printf("infoOTP::%v", infoOTP)
 
 	// Update status verified
 	err = s.r.UpdateUserVerificationStatus(ctx, hashKey)
 	if err != nil {
-		return out, err
+		return out, fmt.Errorf("err::UpdateUserVerificationStatus::%v", err)
 	}
 
 	// Output
 	out.Token = infoOTP.VerifyKeyHash
 	out.Message = "Success"
 
-	return out, err
+	return out, nil
 }
 
 func (s *sUserLogin) UpdatePasswordRegister(ctx context.Context, token string, password string) (userId int, err error) {
@@ -304,7 +343,7 @@ func (s *sUserLogin) SetupTwoFactorAuth(ctx context.Context, in *model.SetupTwoF
 	}
 
 	if isTrueFactorAuth > 0 {
-		return response.ErrCodeTwoFactorAuthSetupFailed, fmt.Errorf("Two-factor authentication is already enabled")
+		return response.ErrCodeTwoFactorAuthSetupFailed, fmt.Errorf("two-factor authentication is already enabled")
 	}
 
 	// 2. Create new record type Auth
@@ -320,9 +359,9 @@ func (s *sUserLogin) SetupTwoFactorAuth(ctx context.Context, in *model.SetupTwoF
 
 	// 3. send otp to in.TwoFactorEmail
 	hashUserTwoFactor := crypto.GetHash(strconv.Itoa(int(in.UserId)))
-	keyUserTwoFactor := utils.GetUserKey(hashUserTwoFactor)
+	keyUserTwoFactor := utils.Get2FaKey(hashUserTwoFactor)
 
-	err = global.RDB.Set(ctx, keyUserTwoFactor, "123456", time.Duration(constance.TIME_OTP_REGISTER)*time.Minute).Err()
+	err = global.RDB.Set(ctx, keyUserTwoFactor, "111111", time.Duration(constance.TIME_OTP_REGISTER)*time.Minute).Err()
 	if err != nil {
 		return response.ErrCodeTwoFactorAuthSetupFailed, err
 	}
@@ -330,6 +369,46 @@ func (s *sUserLogin) SetupTwoFactorAuth(ctx context.Context, in *model.SetupTwoF
 	return response.ErrCodeSuccess, nil
 }
 
-func (s *sUserLogin) VerifyTwoFactorAuth(ctx context.Context, in *model.VerifyInput) (codeResult int, err error) {
+func (s *sUserLogin) VerifyTwoFactorAuth(ctx context.Context, in *model.TwoFactorVerificationInput) (codeResult int, err error) {
+	isTwoFactorAuth, err := s.r.IsTwoFactorEnabled(ctx, in.UserId)
+	if err != nil {
+		return response.ErrCodeTwoFactorAuthVerifyFailed, err
+	}
+
+	if isTwoFactorAuth > 0 {
+		return response.ErrCodeTwoFactorAuthVerifyFailed, fmt.Errorf("2FA authentication is not enabled")
+	}
+
+	// 2. Check OTP in redis avalable
+	hashUserTwoFactor := crypto.GetHash(strconv.Itoa(int(in.UserId)))
+	keyUserTwoFactor := utils.Get2FaKey(hashUserTwoFactor)
+
+	otpVerifyAuth, err := global.RDB.Get(ctx, keyUserTwoFactor).Result()
+
+	if errCode, errMsg := utils.HandleGetKeyRedis(otpVerifyAuth, err); errMsg != nil {
+		return errCode, errMsg
+	}
+
+	// 3. Check OTP
+	if otpVerifyAuth != in.TwoFactorCode {
+		return response.ErrCodeTwoFactorAuthVerifyFailed, fmt.Errorf("OTP does not match")
+	}
+
+	// 4. Update status
+	err = s.r.UpdateTwoFactorStatus(ctx, database.UpdateTwoFactorStatusParams{
+		UserID:            in.UserId,
+		TwoFactorAuthType: database.PreGoAccUserTwoFactor9999TwoFactorAuthTypeEMAIL,
+	})
+
+	if err != nil {
+		return response.ErrCodeTwoFactorAuthVerifyFailed, err
+	}
+
+	// 5. Remove OTP
+	_, err = global.RDB.Del(ctx, keyUserTwoFactor).Result()
+	if err != nil {
+		return response.ErrCodeTwoFactorAuthVerifyFailed, err
+	}
+
 	return response.ErrCodeSuccess, nil
 }

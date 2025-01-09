@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -41,14 +42,19 @@ func CreateToken(uuidToken string) (string, error) {
 }
 
 func ParseJwtTokenSubject(token string) (*jwt.RegisteredClaims, error) {
-	tokenClaims, err := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(jwtToken *jwt.Token) (interface{}, error) {
+	tokenClaims, err := jwt.ParseWithClaims(token, &PayloadClaims{}, func(jwtToken *jwt.Token) (interface{}, error) {
 		return []byte(global.Config.Jwt.ApiSecretKey), nil
 	})
 
-	if tokenClaims != nil {
-		if claims, ok := tokenClaims.Claims.(*jwt.RegisteredClaims); ok && tokenClaims.Valid {
-			return claims, nil
-		}
+	fmt.Println("tokenClaims", tokenClaims)
+
+	if err != nil {
+		fmt.Println(err)
+	} else if claims, ok := tokenClaims.Claims.(*PayloadClaims); ok {
+		fmt.Println(claims.RegisteredClaims.Issuer)
+		return &claims.RegisteredClaims, nil
+	} else {
+		fmt.Println("unknown claims type, cannot proceed")
 	}
 
 	return nil, err
