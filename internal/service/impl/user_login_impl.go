@@ -17,7 +17,6 @@ import (
 	"github.com/onlylight29/go-ecommerce-backend-api/internal/utils/auth"
 	"github.com/onlylight29/go-ecommerce-backend-api/internal/utils/crypto"
 	"github.com/onlylight29/go-ecommerce-backend-api/internal/utils/random"
-	"github.com/onlylight29/go-ecommerce-backend-api/internal/utils/sendto"
 	"github.com/onlylight29/go-ecommerce-backend-api/pkg/response"
 	"go.uber.org/zap"
 )
@@ -60,23 +59,23 @@ func (s *sUserLogin) Login(ctx context.Context, in *model.LoginInput) (codeResul
 			return response.ErrCodeAuthFailed, out, fmt.Errorf("set OTP register failed")
 		}
 
-		infoUserTwoFactor, err := s.r.GetTwoFactorMethodByIDAndType(ctx, database.GetTwoFactorMethodByIDAndTypeParams{
-			UserID:            uint32(userBase.UserID),
-			TwoFactorAuthType: database.PreGoAccUserTwoFactor9999TwoFactorAuthTypeEMAIL,
-		})
+		// // send mail
+		// infoUserTwoFactor, err := s.r.GetTwoFactorMethodByIDAndType(ctx, database.GetTwoFactorMethodByIDAndTypeParams{
+		// 	UserID:            uint32(userBase.UserID),
+		// 	TwoFactorAuthType: database.PreGoAccUserTwoFactor9999TwoFactorAuthTypeEMAIL,
+		// })
 
-		if err != nil {
-			return response.ErrCodeAuthFailed, out, fmt.Errorf("get OTP register failed")
-		}
+		// if err != nil {
+		// 	return response.ErrCodeAuthFailed, out, fmt.Errorf("get OTP register failed")
+		// }
 
-		// send mail
-		go sendto.SendTextEmailOtp([]string{infoUserTwoFactor.TwoFactorEmail.String}, constance.HOST_EMAIL, "111111")
+		// go sendto.SendTextEmailOtp([]string{infoUserTwoFactor.TwoFactorEmail.String}, constance.HOST_EMAIL, "111111")
 		out.Message = "Send OTP 2FA to Email..."
 
-		return response.ErrCodeSuccess, out, nil
+		// return response.ErrCodeSuccess, out, nil
 	}
 
-	// 4. Update password time with goroutine async
+	// 4. Update password time (user_login_time) with goroutine async
 	go s.r.LoginUserBase(ctx, database.LoginUserBaseParams{
 		UserLoginIp:  sql.NullString{String: "127.0.0.1", Valid: true},
 		UserAccount:  in.UserAccount,
