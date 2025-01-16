@@ -53,15 +53,47 @@ services:
     volumes:
       - kafka_data:/var/lib/kafka/data
     environment:
+      # Kafka cluster uniquely
+      # generate with UUID
       CLUSTER_ID: 'q1Sh-9_ISia_zwGINzRvyQ'
+
+      # A unique identifier for this broker within the Kafka cluster
+      # must be an integer that uniquely
       KAFKA_NODE_ID: 1
+
+      # mapping between listener names and their security protocols
+      # PLAINTEXT: internal network (like internal network docker...)
+      # CONTROLLER: car RACK or zookeeper
+      # PLAINTEXT_HOST: external
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+
+      # brokers advertise themselves to clients for connection.
+      # tells clients to use the broker's internal hostname kafka for inter-broker communication
+      # and localhost for external access
       KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092'
+
+      # actual network interfaces and ports the broker listens on
+      # PLAINTEXT://kafka:29092 for internal communication
+      # CONTROLLER://kafka:29093 for controller tasks
+      # PLAINTEXT_HOST://0.0.0.0:9092 for external access
+      # that is the port Kafka is truly listening on Not `KAFKA_ADVERTISED_LISTENERS`
       KAFKA_LISTENERS: 'PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+
+      # Specifies the roles of this broker
       KAFKA_PROCESS_ROLES: 'broker,controller'
+
+      # Lists the brokers participating in the controller quorum
+      # designates broker 1 at kafka:29093 as part of the controller quorum.
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
+
+      # Specifies which listener Kafka brokers use for internal communication
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+
+      # Indicates the listener(s) used by the broker when acting as a controller
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+
+      # Configures the replication factor for the offsets topic, which stores consumer group offsets.
+      # A value of 1 means there is only one replica of the offsets topic
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
       - steaming-network
@@ -83,17 +115,34 @@ services:
       - kafka
       - mysql
     environment:
+
+      # Specifies the Kafka brokers the Connect worker should connect to
       CONNECT_BOOTSTRAP_SERVERS: "kafka:29092"
+
+      # Defines the group ID for Kafka Connect workers
+      # ensuring all workers in the same group share the workload
       CONNECT_GROUP_ID: "kafka-connect-group"
+
+      # The topic where connector configurations are stored
       CONNECT_CONFIG_STORAGE_TOPIC: "_connect-configs"
+
+      # Stores offsets for source connectors
       CONNECT_OFFSET_STORAGE_TOPIC: "_connect-offsets"
+
+      # Holds the status of connectors and tasks
       CONNECT_STATUS_STORAGE_TOPIC: "_connect-statuses"
+
+      # Specify the data format for keys/values (JSON in this case)
       CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+
+      # Handle internal topic data serialization (also JSON)s
       CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
       CONNECT_REST_ADVERTISED_HOST_NAME: "kafka-connect"
+      
+      # Set replication levels for reliability across Kafka topics
       CONNECT_REPLICATION_FACTOR: 1
       CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
       CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
@@ -110,10 +159,22 @@ services:
       - kafka
       - kafka-connect
     environment:
+      # Defines the name of the Kafka cluster
       KAFKA_CLUSTERS_0_NAME: local
+
+      # Kafka-UI connects to the Kafka cluster to fetch metadata
+      # server address
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+
+      # Names the Kafka Connect integration as "connect"
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: connect
+
+      # Points to the Kafka Connect REST API endpoint
+      # managing connectors via the UI
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect:8083
+
+      # Enables dynamic configuration in Kafka-UI
+      # allowing updates or changes to be reflected without restarting the UI
       DYNAMIC_CONFIG_ENABLED: 'true'
     ports:
       - "8080:8080"
