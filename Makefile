@@ -10,6 +10,7 @@ NAME_SQL ?= abc
 dev:
 	go run ./cmd/${APP_NAME}/main.go
 
+# Binding structure between sql files and mysql database
 goose-create:
 	goose -s create $(NAME_SQL) sql -dir=$(GOOSE_MIGRATION_DIR)
 
@@ -26,6 +27,7 @@ goose-down:
 goose-reset:
 	goose $(GOOSE_DRIVER) $(GOOSE_DBSTRING) -dir=$(GOOSE_MIGRATION_DIR) reset
 
+# Generate sql to golang code
 sqlcgen:
 	sqlc generate
 

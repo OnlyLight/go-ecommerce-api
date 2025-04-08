@@ -11,4 +11,5 @@ func InitServiceInterface() {
 	queries := database.New(global.Mdbc)
 	// User Service Interface
 	service.InitUserLogin(impl.NewUserLoginImpl(queries))
+	service.InitTicketItem(impl.NewTicketItemImpl(queries))
 }
