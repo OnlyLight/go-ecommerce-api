@@ -34,3 +34,32 @@ func InitRedis() {
 	global.Logger.Info("Connected to Redis")
 	global.RDB = rdb
 }
+
+func InitRedisSentinel() {
+	rdb := redis.NewFailoverClient(&redis.FailoverOptions{
+		MasterName:    "mymaster",
+		SentinelAddrs: []string{"127.0.0.1:26379", "127.0.0.1:26380", "127.0.0.1:26381"},
+		DB:            0,
+		Password:      "123456",
+	})
+
+	_, err := rdb.Ping(ctx).Result()
+	if err != nil {
+		global.Logger.Fatal("Failed to connect to Redis Sentinel::", zap.Error(err))
+	}
+
+	err = rdb.Set(ctx, "test_key", "Hello Redis Sentinel", 0).Err()
+	if err != nil {
+		global.Logger.Fatal("Error Set Key::", zap.Error(err))
+	}
+
+	val, err := rdb.Get(ctx, "test_key").Result()
+	if err != nil {
+		global.Logger.Fatal("Error Get Key::", zap.Error(err))
+	}
+
+	fmt.Printf("Value test_key:: %v", val)
+
+	global.Logger.Info("Initializing Redis Sentinel Successfully!")
+	global.RDB = rdb
+}

@@ -24,7 +24,7 @@ func InitMySQLC() {
 	// fmt.Println("connection string::", s)
 	db, err := sql.Open("mysql", s)
 
-	checkErrPanic(err, "Failed to connect to MySQLc database")
+	checkErrPanicC(err, "Failed to connect to MySQLc database")
 
 	global.Logger.Info("Connected to MySQLc database")
 	global.Mdbc = db
