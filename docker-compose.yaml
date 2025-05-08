@@ -79,10 +79,10 @@ services:
       # that is the port Kafka is truly listening on Not `KAFKA_ADVERTISED_LISTENERS`
       KAFKA_LISTENERS: 'PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092'
 
-      # Specifies the roles of this broker
+      # Specifies the roles of this broker (setting need to have using Kraft)
       KAFKA_PROCESS_ROLES: 'broker,controller'
 
-      # Lists the brokers participating in the controller quorum
+      # Lists the brokers participating in the controller quorum (using Kraft instead of zookeper)
       # designates broker 1 at kafka:29093 as part of the controller quorum.
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
 
